@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\TripLocationUpdated;
 use App\Models\Trip;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -80,6 +81,9 @@ class TripController extends Controller
             'current_lat' => $validated['lat'],
             'current_lng' => $validated['lng'],
         ]);
+
+        // Broadcast location update event
+        broadcast(new TripLocationUpdated($trip))->toOthers();
 
         return response()->json([
             'success' => true,
