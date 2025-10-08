@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
@@ -47,5 +48,15 @@ class User extends Authenticatable
             'password' => 'hashed',
             'is_volunteer' => 'boolean',
         ];
+    }
+
+    /**
+     * Get the trusted contacts for the user.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function trustedContacts(): HasMany
+    {
+        return $this->hasMany(TrustedContact::class);
     }
 }
