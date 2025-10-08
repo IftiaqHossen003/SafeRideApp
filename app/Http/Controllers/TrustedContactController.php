@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\TrustedContact;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 
 /**
@@ -21,7 +22,9 @@ class TrustedContactController extends Controller
      */
     public function index(): View
     {
-        $contacts = auth()->user()->trustedContacts()->latest()->get();
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+        $contacts = $user->trustedContacts()->latest()->get();
 
         return view('trusted-contacts.index', compact('contacts'));
     }
@@ -51,7 +54,7 @@ class TrustedContactController extends Controller
             'contact_user_id' => 'nullable|exists:users,id',
         ]);
 
-        $validated['user_id'] = auth()->id();
+        $validated['user_id'] = Auth::id();
 
         TrustedContact::create($validated);
 
@@ -67,7 +70,7 @@ class TrustedContactController extends Controller
      */
     public function edit(TrustedContact $trustedContact): View|RedirectResponse
     {
-        if ($trustedContact->user_id !== auth()->id()) {
+        if ($trustedContact->user_id !== Auth::id()) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -83,7 +86,7 @@ class TrustedContactController extends Controller
      */
     public function update(Request $request, TrustedContact $trustedContact): RedirectResponse
     {
-        if ($trustedContact->user_id !== auth()->id()) {
+        if ($trustedContact->user_id !== Auth::id()) {
             abort(403, 'Unauthorized action.');
         }
 
@@ -108,7 +111,7 @@ class TrustedContactController extends Controller
      */
     public function destroy(TrustedContact $trustedContact): RedirectResponse
     {
-        if ($trustedContact->user_id !== auth()->id()) {
+        if ($trustedContact->user_id !== Auth::id()) {
             abort(403, 'Unauthorized action.');
         }
 
