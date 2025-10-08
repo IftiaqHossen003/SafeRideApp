@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\TripViewerController;
 use App\Http\Controllers\TrustedContactController;
 use Illuminate\Support\Facades\Route;
 
@@ -19,5 +20,8 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::resource('trusted-contacts', TrustedContactController::class)->middleware('auth');
+
+// Public trip viewer - no authentication required
+Route::get('/trip/view/{share_uuid}', [TripViewerController::class, 'show'])->name('trip.view');
 
 require __DIR__.'/auth.php';
