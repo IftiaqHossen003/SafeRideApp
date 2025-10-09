@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * Trip Model
@@ -32,6 +33,7 @@ class Trip extends Model
         'status',
         'started_at',
         'ended_at',
+        'last_location_update_at',
     ];
 
     /**
@@ -50,6 +52,7 @@ class Trip extends Model
             'current_lng' => 'decimal:7',
             'started_at' => 'datetime',
             'ended_at' => 'datetime',
+            'last_location_update_at' => 'datetime',
         ];
     }
 
@@ -61,5 +64,15 @@ class Trip extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    /**
+     * Get the route alerts for the trip.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function routeAlerts(): HasMany
+    {
+        return $this->hasMany(RouteAlert::class);
     }
 }
