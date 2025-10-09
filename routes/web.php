@@ -3,6 +3,8 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TripViewerController;
 use App\Http\Controllers\TrustedContactController;
+use App\Http\Controllers\VolunteerController;
+use App\Http\Controllers\VolunteerDashboardController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -17,6 +19,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    
+    // Volunteer routes
+    Route::post('/volunteer/toggle', [VolunteerController::class, 'toggle'])->name('volunteer.toggle');
+    Route::get('/volunteer/dashboard', [VolunteerDashboardController::class, 'index'])->name('volunteer.dashboard');
 });
 
 Route::resource('trusted-contacts', TrustedContactController::class)->middleware('auth');
