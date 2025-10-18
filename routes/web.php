@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ReportsController;
 use App\Http\Controllers\TripViewerController;
 use App\Http\Controllers\TrustedContactController;
 use App\Http\Controllers\VolunteerController;
@@ -26,6 +27,12 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::resource('trusted-contacts', TrustedContactController::class)->middleware('auth');
+
+// Admin reporting routes
+Route::prefix('admin')->middleware(['auth', 'can:view-reports'])->group(function () {
+    Route::get('/reports', [ReportsController::class, 'index'])->name('admin.reports.index');
+    Route::get('/reports/export', [ReportsController::class, 'exportCsv'])->name('admin.reports.export');
+});
 
 // Public trip viewer - no authentication required
 Route::get('/trip/view/{share_uuid}', [TripViewerController::class, 'show'])->name('trip.view');

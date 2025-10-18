@@ -24,6 +24,7 @@ class User extends Authenticatable
         'password',
         'pseudonym',
         'is_volunteer',
+        'is_admin',
     ];
 
     /**
@@ -47,6 +48,7 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'is_volunteer' => 'boolean',
+            'is_admin' => 'boolean',
         ];
     }
 
