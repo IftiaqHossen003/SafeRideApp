@@ -13,11 +13,15 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
-
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+        // Run the comprehensive SafeRide seeder
+        $this->call([
+            SafeRideSeeder::class,
         ]);
+
+        // Original test user (commented out as SafeRideSeeder creates comprehensive test data)
+        // User::factory()->create([
+        //     'name' => 'Test User',
+        //     'email' => 'test@example.com',
+        // ]);
     }
 }

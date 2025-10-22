@@ -21,6 +21,11 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     
+    // Trips routes
+    Route::get('/trips', function () {
+        return view('trips.index');
+    })->name('trips.index');
+    
     // Volunteer routes
     Route::post('/volunteer/toggle', [VolunteerController::class, 'toggle'])->name('volunteer.toggle');
     Route::get('/volunteer/dashboard', [VolunteerDashboardController::class, 'index'])->name('volunteer.dashboard');

@@ -1,11 +1,222 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# SafeRide Application
 
 <p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
+<a href="https://github.com/IftiaqHossen003/SafeRideApp/actions"><img src="https://github.com/IftiaqHossen003/SafeRideApp/workflows/CI%2FCD%20Pipeline/badge.svg" alt="Build Status"></a>
+<a href="https://github.com/IftiaqHossen003/SafeRideApp"><img src="https://img.shields.io/github/license/IftiaqHossen003/SafeRideApp" alt="License"></a>
+<a href="https://laravel.com"><img src="https://img.shields.io/badge/Laravel-11.x-red.svg" alt="Laravel Version"></a>
+<a href="https://php.net"><img src="https://img.shields.io/badge/PHP-8.2%7C8.3-blue.svg" alt="PHP Version"></a>
 </p>
+
+## About SafeRide
+
+SafeRide is a comprehensive ride-sharing safety application built with Laravel 11. The application provides essential safety features including SOS alerts, trip tracking, volunteer responder system, and trusted contact notifications.
+
+### Key Features
+
+- **Trip Management**: Create, track, and manage ride-sharing trips
+- **SOS Alert System**: Emergency alert system with volunteer responders
+- **Trusted Contacts**: Notification system for emergency contacts
+- **User Management**: Role-based access control (Admin, Volunteers, Users)
+- **Real-time Updates**: Live trip tracking and status updates
+- **Geographic Integration**: Location-based services and mapping
+
+## Environment Variables
+
+The following environment variables are required for the SafeRide application:
+
+### Database Configuration
+```env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=saferide
+DB_USERNAME=your_db_username
+DB_PASSWORD=your_db_password
+```
+
+### Pusher Configuration (Real-time features)
+```env
+BROADCAST_DRIVER=pusher
+PUSHER_APP_ID=your_pusher_app_id
+PUSHER_APP_KEY=your_pusher_app_key
+PUSHER_APP_SECRET=your_pusher_app_secret
+PUSHER_HOST=
+PUSHER_PORT=443
+PUSHER_SCHEME=https
+PUSHER_APP_CLUSTER=mt1
+
+VITE_PUSHER_APP_KEY="${PUSHER_APP_KEY}"
+VITE_PUSHER_HOST="${PUSHER_HOST}"
+VITE_PUSHER_PORT="${PUSHER_PORT}"
+VITE_PUSHER_SCHEME="${PUSHER_SCHEME}"
+VITE_PUSHER_APP_CLUSTER="${PUSHER_APP_CLUSTER}"
+```
+
+### Twilio Configuration (SMS notifications)
+```env
+TWILIO_SID=your_twilio_account_sid
+TWILIO_AUTH_TOKEN=your_twilio_auth_token
+TWILIO_PHONE_NUMBER=+1234567890
+```
+
+### Email Configuration
+```env
+MAIL_MAILER=smtp
+MAIL_HOST=mailpit
+MAIL_PORT=1025
+MAIL_USERNAME=null
+MAIL_PASSWORD=null
+MAIL_ENCRYPTION=null
+MAIL_FROM_ADDRESS="hello@example.com"
+MAIL_FROM_NAME="${APP_NAME}"
+```
+
+### Application Configuration
+```env
+APP_NAME=SafeRide
+APP_ENV=local
+APP_KEY=base64:generated_key_here
+APP_DEBUG=true
+APP_TIMEZONE=UTC
+APP_URL=http://localhost
+
+LOG_CHANNEL=stack
+LOG_STACK=single
+LOG_DEPRECATIONS_CHANNEL=null
+LOG_LEVEL=debug
+
+SESSION_DRIVER=database
+SESSION_LIFETIME=120
+SESSION_ENCRYPT=false
+SESSION_PATH=/
+SESSION_DOMAIN=null
+
+CACHE_STORE=database
+QUEUE_CONNECTION=database
+```
+
+## Local Development Setup
+
+Follow these step-by-step instructions to set up SafeRide on your local machine:
+
+### Prerequisites
+
+- **PHP 8.2 or 8.3** with required extensions
+- **Composer** (latest version)
+- **Node.js 18+** and npm
+- **MySQL 8.0+** or **SQLite** (for development)
+- **Git**
+
+### Installation Steps
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/IftiaqHossen003/SafeRideApp.git
+   cd SafeRideApp
+   ```
+
+2. **Install PHP dependencies**
+   ```bash
+   composer install
+   ```
+
+3. **Install Node.js dependencies**
+   ```bash
+   npm install
+   ```
+
+4. **Environment setup**
+   ```bash
+   # Copy environment file
+   cp .env.example .env
+   
+   # Generate application key
+   php artisan key:generate
+   ```
+
+5. **Configure your .env file**
+   - Update database credentials
+   - Add Pusher credentials (optional for real-time features)
+   - Add Twilio credentials (optional for SMS notifications)
+   - Configure email settings
+
+6. **Database setup**
+   ```bash
+   # Create SQLite database (for development)
+   touch database/database.sqlite
+   
+   # OR create MySQL database
+   mysql -u root -p -e "CREATE DATABASE saferide;"
+   
+   # Run migrations
+   php artisan migrate
+   
+   # Seed with test data
+   php artisan db:seed
+   ```
+
+7. **Build frontend assets**
+   ```bash
+   npm run build
+   ```
+
+8. **Start the development server**
+   ```bash
+   # Option 1: Laravel development server
+   php artisan serve
+   
+   # Option 2: Full development environment with watch mode
+   composer run dev
+   ```
+
+### Quick Setup (One Command)
+
+For rapid setup, use the automated setup script:
+
+```bash
+composer run setup
+```
+
+This command will:
+- Install all dependencies
+- Copy environment file
+- Generate application key
+- Run migrations
+- Build frontend assets
+
+### Development Tools
+
+**Run tests:**
+```bash
+# All tests
+php artisan test
+
+# Specific test suite
+php artisan test --testsuite=Feature
+```
+
+**Code formatting:**
+```bash
+./vendor/bin/pint
+```
+
+**Queue worker (for background jobs):**
+```bash
+php artisan queue:work
+```
+
+**Asset development with hot reload:**
+```bash
+npm run dev
+```
+
+### Test Accounts
+
+After seeding, you can use these test accounts:
+
+- **Admin**: admin@saferide.com / password
+- **Volunteer**: sarah@volunteer.com / password  
+- **User**: john@example.com / password
 
 ## About Laravel
 
