@@ -315,7 +315,7 @@
             }
         }
 
-        // Start Ride function - Simulated with coordinates
+        // Start Ride function - Using default origin location
         function startRide() {
             const addressInput = document.getElementById('addressInput');
             const destination = addressInput.value.trim();
@@ -326,75 +326,42 @@
                 return;
             }
             
-            // Get current location
-            if (navigator.geolocation) {
-                alert('Getting your current location...');
-                
-                // Request location with proper options
-                navigator.geolocation.getCurrentPosition(
-                    (position) => {
-                        // Simulate destination coordinates (in real app, use geocoding API)
-                        const originLat = position.coords.latitude;
-                        const originLng = position.coords.longitude;
-                        const destLat = originLat + 0.01; // Simulate destination
-                        const destLng = originLng + 0.01;
+            // Use default origin location (Khulna, Bangladesh - approximate city center)
+            const originLat = 22.8456;
+            const originLng = 89.5403;
+            
+            // Simulate destination coordinates (offset from origin)
+            const destLat = originLat + 0.01;
+            const destLng = originLng + 0.01;
 
-                        // Start trip via API
-                        fetch('{{ route("trips.start") }}', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                            },
-                            body: JSON.stringify({
-                                origin_lat: originLat,
-                                origin_lng: originLng,
-                                destination_lat: destLat,
-                                destination_lng: destLng
-                            })
-                        })
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.success) {
-                                alert(`🚗 SafeRide Started!\n\nDestination: ${destination}\n\nYour trip is now being tracked. Trusted contacts have been notified.`);
-                                window.location.href = `/trips/${data.trip.id}`;
-                            } else {
-                                alert('Failed to start trip: ' + (data.message || 'Unknown error'));
-                            }
-                        })
-                        .catch(error => {
-                            console.error('Error:', error);
-                            alert('Failed to start trip. Please try again.');
-                        });
-                    },
-                    (error) => {
-                        // Better error handling based on error code
-                        let errorMessage = '';
-                        switch(error.code) {
-                            case error.PERMISSION_DENIED:
-                                errorMessage = '⚠️ Location access denied!\n\nPlease:\n1. Click the location icon in browser address bar\n2. Select "Allow"\n3. Refresh the page\n4. Try again';
-                                break;
-                            case error.POSITION_UNAVAILABLE:
-                                errorMessage = '⚠️ Location information unavailable.\n\nPlease check:\n• GPS is enabled on your device\n• You have internet connection\n• Try again in a moment';
-                                break;
-                            case error.TIMEOUT:
-                                errorMessage = '⚠️ Location request timed out.\n\nPlease try again.';
-                                break;
-                            default:
-                                errorMessage = '⚠️ Unknown error occurred while getting location.\n\nError: ' + error.message;
-                        }
-                        alert(errorMessage);
-                        console.error('Geolocation error:', error);
-                    },
-                    {
-                        enableHighAccuracy: true,
-                        timeout: 10000,
-                        maximumAge: 0
-                    }
-                );
-            } else {
-                alert('⚠️ Geolocation not supported!\n\nYour browser doesn\'t support location services.\nPlease use a modern browser like Chrome, Firefox, or Edge.');
-            }
+            // Start trip via API
+            fetch('{{ route("trips.start") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({
+                    origin_lat: originLat,
+                    origin_lng: originLng,
+                    destination_lat: destLat,
+                    destination_lng: destLng,
+                    destination_address: destination
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert(`🚗 SafeRide Started!\n\nDestination: ${destination}\n\nYour trip is now being tracked. Trusted contacts have been notified.`);
+                    window.location.href = `/trips/${data.trip.id}`;
+                } else {
+                    alert('Failed to start trip: ' + (data.message || 'Unknown error'));
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Failed to start trip. Please try again.');
+            });
         }
 
         // Select Ride Option function

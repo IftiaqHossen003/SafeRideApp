@@ -553,10 +553,9 @@
             updateLocation();
 
             // Load addresses
-            document.getElementById('originAddress').textContent = 
-                `${tripData.origin_lat.toFixed(4)}, ${tripData.origin_lng.toFixed(4)}`;
+            document.getElementById('originAddress').textContent = 'KUET, Khulna, Bangladesh';
             document.getElementById('destinationAddress').textContent = 
-                `${tripData.destination_lat.toFixed(4)}, ${tripData.destination_lng.toFixed(4)}`;
+                '{{ $trip->destination_address ?? "Destination Location" }}';
         });
     </script>
 </x-app-layout>

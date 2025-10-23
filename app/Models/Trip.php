@@ -27,6 +27,7 @@ class Trip extends Model
         'origin_lng',
         'destination_lat',
         'destination_lng',
+        'destination_address',
         'current_lat',
         'current_lng',
         'share_uuid',

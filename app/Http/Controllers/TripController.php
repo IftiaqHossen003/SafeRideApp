@@ -83,6 +83,7 @@ class TripController extends Controller
             'origin_lng' => 'required|numeric|between:-180,180',
             'destination_lat' => 'required|numeric|between:-90,90',
             'destination_lng' => 'required|numeric|between:-180,180',
+            'destination_address' => 'nullable|string|max:255',
         ]);
 
         // Get user's active device mapping
@@ -95,6 +96,7 @@ class TripController extends Controller
             'origin_lng' => $validated['origin_lng'],
             'destination_lat' => $validated['destination_lat'],
             'destination_lng' => $validated['destination_lng'],
+            'destination_address' => $validated['destination_address'] ?? null,
             'current_lat' => $validated['origin_lat'], // Start at origin
             'current_lng' => $validated['origin_lng'],
             'share_uuid' => (string) Str::uuid(),
