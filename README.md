@@ -1,24 +1,29 @@
-# SafeRide Application
+# 🚗 SafeRide Application
+
+**Real-time GPS Tracking & Safety Platform with Traccar Integration**
 
 <p align="center">
 <a href="https://github.com/IftiaqHossen003/SafeRideApp/actions"><img src="https://github.com/IftiaqHossen003/SafeRideApp/workflows/CI%2FCD%20Pipeline/badge.svg" alt="Build Status"></a>
 <a href="https://github.com/IftiaqHossen003/SafeRideApp"><img src="https://img.shields.io/github/license/IftiaqHossen003/SafeRideApp" alt="License"></a>
-<a href="https://laravel.com"><img src="https://img.shields.io/badge/Laravel-11.x-red.svg" alt="Laravel Version"></a>
-<a href="https://php.net"><img src="https://img.shields.io/badge/PHP-8.2%7C8.3-blue.svg" alt="PHP Version"></a>
+<a href="https://laravel.com"><img src="https://img.shields.io/badge/Laravel-12.x-red.svg" alt="Laravel Version"></a>
+<a href="https://php.net"><img src="https://img.shields.io/badge/PHP-8.2-blue.svg" alt="PHP Version"></a>
 </p>
 
-## About SafeRide
+## 📖 About SafeRide
 
-SafeRide is a comprehensive ride-sharing safety application built with Laravel 11. The application provides essential safety features including SOS alerts, trip tracking, volunteer responder system, and trusted contact notifications.
+SafeRide is a comprehensive ride-sharing safety application built with Laravel 12 that integrates with **Traccar GPS** server for real-time location tracking. The application provides essential safety features including SOS alerts, live map view, trip tracking, volunteer responder system, and trusted contact notifications.
 
-### Key Features
+### ✨ Key Features
 
-- **Trip Management**: Create, track, and manage ride-sharing trips
-- **SOS Alert System**: Emergency alert system with volunteer responders
-- **Trusted Contacts**: Notification system for emergency contacts
-- **User Management**: Role-based access control (Admin, Volunteers, Users)
-- **Real-time Updates**: Live trip tracking and status updates
-- **Geographic Integration**: Location-based services and mapping
+- **🗺️ Live Map View**: Real-time GPS tracking with Mapbox integration
+- **📡 Traccar GPS Integration**: Device mapping, position syncing, and webhook support
+- **🚨 SOS Alert System**: Emergency alerts to trusted contacts with volunteer responders
+- **📍 Real-time Broadcasting**: WebSocket updates via Laravel Echo + Pusher
+- **👥 Trusted Contacts**: Manage and notify emergency contacts
+- **🔐 Device Management**: One-click GPS device linking per user
+- **📊 Trip History**: Complete route visualization with GPS metrics
+- **⚡ Route Anomaly Detection**: Deviation alerts and unsafe area warnings
+- **🎯 Role-based Access**: Admin, Volunteers, and Users with proper permissions
 
 ## Environment Variables
 

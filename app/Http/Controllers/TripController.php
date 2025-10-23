@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Events\TripLocationUpdated;
+use App\Models\DeviceMapping;
 use App\Models\RouteAlert;
 use App\Models\SosAlert;
 use App\Models\Trip;
@@ -19,6 +20,56 @@ use Illuminate\Support\Str;
 class TripController extends Controller
 {
     /**
+     * Display trips index page
+     *
+     * @return \Illuminate\View\View
+     */
+    public function index()
+    {
+        return view('trips.index');
+    }
+
+    /**
+     * Display a specific trip (active trip tracking)
+     *
+     * @param  \App\Models\Trip  $trip
+     * @return \Illuminate\View\View
+     */
+    public function show(Trip $trip)
+    {
+        // Ensure user owns the trip or is a trusted contact
+        if ($trip->user_id !== Auth::id()) {
+            abort(403, 'Unauthorized to view this trip');
+        }
+
+        // Load relationships including locations for map route
+        $trip->load([
+            'sosAlerts', 
+            'routeAlerts',
+            'locations' => function($query) {
+                $query->orderBy('recorded_at', 'asc');
+            }
+        ]);
+
+        return view('trips.show', compact('trip'));
+    }
+
+    /**
+     * Display trip history
+     *
+     * @return \Illuminate\View\View
+     */
+    public function history()
+    {
+        $trips = Trip::where('user_id', Auth::id())
+            ->with(['sosAlerts', 'routeAlerts'])
+            ->orderBy('created_at', 'desc')
+            ->paginate(20);
+
+        return view('trips.history', compact('trips'));
+    }
+
+    /**
      * Start a new trip.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -34,6 +85,9 @@ class TripController extends Controller
             'destination_lng' => 'required|numeric|between:-180,180',
         ]);
 
+        // Get user's active device mapping
+        $activeDevice = DeviceMapping::getActiveForUser(Auth::id());
+
         // Create trip with authenticated user
         $trip = Trip::create([
             'user_id' => Auth::id(),
@@ -46,6 +100,7 @@ class TripController extends Controller
             'share_uuid' => (string) Str::uuid(),
             'status' => 'ongoing',
             'started_at' => now(),
+            'traccar_device_id' => $activeDevice?->traccar_device_id, // Auto-assign device
         ]);
 
         return response()->json([

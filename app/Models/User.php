@@ -61,4 +61,44 @@ class User extends Authenticatable
     {
         return $this->hasMany(TrustedContact::class);
     }
+
+    /**
+     * Get the trips for the user.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function trips(): HasMany
+    {
+        return $this->hasMany(Trip::class);
+    }
+
+    /**
+     * Get the SOS alerts for the user.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function sosAlerts(): HasMany
+    {
+        return $this->hasMany(SosAlert::class);
+    }
+
+    /**
+     * Get the device mappings for the user.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function deviceMappings(): HasMany
+    {
+        return $this->hasMany(DeviceMapping::class);
+    }
+
+    /**
+     * Get the active device mapping for the user.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function activeDeviceMapping(): HasMany
+    {
+        return $this->hasMany(DeviceMapping::class)->where('is_active', true);
+    }
 }

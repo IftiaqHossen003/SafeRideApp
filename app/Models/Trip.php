@@ -34,6 +34,7 @@ class Trip extends Model
         'started_at',
         'ended_at',
         'last_location_update_at',
+        'traccar_device_id',
     ];
 
     /**
@@ -74,5 +75,27 @@ class Trip extends Model
     public function routeAlerts(): HasMany
     {
         return $this->hasMany(RouteAlert::class);
+    }
+
+    /**
+     * Get the SOS alerts for the trip.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function sosAlerts(): HasMany
+    {
+        return $this->hasMany(SosAlert::class);
+    }
+
+    /**
+     * Get the GPS location history for the trip.
+     *
+     * Locations are typically sourced from Traccar or other GPS tracking systems.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function locations(): HasMany
+    {
+        return $this->hasMany(TripLocation::class);
     }
 }

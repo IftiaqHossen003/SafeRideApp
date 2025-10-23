@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SafeRide - Trip View</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Mapbox GL JS -->
+    <link href='https://api.mapbox.com/mapbox-gl-js/v3.0.1/mapbox-gl.css' rel='stylesheet' />
+    <script src='https://api.mapbox.com/mapbox-gl-js/v3.0.1/mapbox-gl.js'></script>
 </head>
 <body class="bg-gray-100">
     <div class="min-h-screen py-12">
@@ -25,17 +29,67 @@
                 <p class="text-sm text-gray-500 mt-2">Share ID: {{ $trip->share_uuid }}</p>
             </div>
 
-            <!-- Map Placeholder -->
-            <div class="bg-white rounded-lg shadow-md p-6 mb-6">
-                <h2 class="text-xl font-semibold text-gray-900 mb-4">Live Location</h2>
-                <div class="bg-gray-200 rounded-lg flex items-center justify-center" style="height: 400px;">
-                    <div class="text-center">
-                        <svg class="mx-auto h-16 w-16 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                        </svg>
-                        <p class="mt-4 text-gray-600 font-medium">Map View (Coming Soon)</p>
-                        <p class="text-sm text-gray-500">Live map tracking will be added in a future update</p>
+            <!-- Live Map -->
+            <div class="bg-white rounded-lg shadow-md overflow-hidden mb-6">
+                <div class="p-4 bg-gradient-to-r from-purple-500 to-blue-500">
+                    <h2 class="text-xl font-semibold text-white">Live Location</h2>
+                    <p class="text-sm text-purple-100">Real-time GPS tracking</p>
+                </div>
+                <div id="map" class="w-full" style="height: 500px;"></div>
+            </div>
+            
+            <!-- GPS Metrics -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                <div class="bg-white rounded-lg shadow-md p-4">
+                    <div class="flex items-center">
+                        <div class="bg-green-100 p-2 rounded-lg mr-3">
+                            <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <p class="text-xs text-gray-600">Speed</p>
+                            <p class="font-bold text-lg" id="gpsSpeed">0 km/h</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg shadow-md p-4">
+                    <div class="flex items-center">
+                        <div class="bg-blue-100 p-2 rounded-lg mr-3">
+                            <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 11l5-5m0 0l5 5m-5-5v12"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <p class="text-xs text-gray-600">Altitude</p>
+                            <p class="font-bold text-lg" id="gpsAltitude">0 m</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg shadow-md p-4">
+                    <div class="flex items-center">
+                        <div class="bg-purple-100 p-2 rounded-lg mr-3">
+                            <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <p class="text-xs text-gray-600">Bearing</p>
+                            <p class="font-bold text-lg" id="gpsBearing">0°</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg shadow-md p-4">
+                    <div class="flex items-center">
+                        <div class="bg-yellow-100 p-2 rounded-lg mr-3">
+                            <svg class="w-5 h-5 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <p class="text-xs text-gray-600">Accuracy</p>
+                            <p class="font-bold text-lg" id="gpsAccuracy">0 m</p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -159,9 +213,162 @@
             <!-- Footer -->
             <div class="mt-8 text-center text-sm text-gray-500">
                 <p>SafeRide - Keeping you safe on every journey</p>
-                <p class="mt-1">This is a read-only view. Location updates in real-time (feature coming soon).</p>
+                <p class="mt-1">This is a read-only view with real-time location updates.</p>
             </div>
         </div>
     </div>
+    
+    <script>
+        // Trip data from backend
+        const tripData = @json($trip);
+        const tripLocations = @json($trip->locations ?? []);
+        
+        // Mapbox configuration
+        mapboxgl.accessToken = '{{ env("MAPBOX_KEY", "pk.eyJ1Ijoic2FmZXJpZGVhcHAiLCJhIjoiY2x6dzUwZ2Q2MGZyNTJqczFrODRpN3l0diJ9.gBz6fZXXN9TBKxFGDWZJ1g") }}';
+        let map, currentMarker;
+        const routeCoordinates = [];
+        
+        // Initialize Mapbox
+        function initMap() {
+            const centerLat = tripData.current_lat || tripData.origin_lat;
+            const centerLng = tripData.current_lng || tripData.origin_lng;
+            
+            map = new mapboxgl.Map({
+                container: 'map',
+                style: 'mapbox://styles/mapbox/streets-v12',
+                center: [centerLng, centerLat],
+                zoom: 13
+            });
+            
+            map.addControl(new mapboxgl.NavigationControl());
+            map.addControl(new mapboxgl.FullscreenControl());
+            
+            // Add origin marker (green)
+            new mapboxgl.Marker({ color: '#10b981' })
+                .setLngLat([tripData.origin_lng, tripData.origin_lat])
+                .setPopup(new mapboxgl.Popup().setHTML('<strong>Trip Start</strong>'))
+                .addTo(map);
+            
+            // Add destination marker (red)
+            new mapboxgl.Marker({ color: '#ef4444' })
+                .setLngLat([tripData.destination_lng, tripData.destination_lat])
+                .setPopup(new mapboxgl.Popup().setHTML('<strong>Destination</strong>'))
+                .addTo(map);
+            
+            // Add current location marker (blue)
+            if (tripData.current_lat && tripData.current_lng) {
+                currentMarker = new mapboxgl.Marker({ color: '#3b82f6' })
+                    .setLngLat([tripData.current_lng, tripData.current_lat])
+                    .setPopup(new mapboxgl.Popup().setHTML('<strong>Current Location</strong>'))
+                    .addTo(map);
+            }
+            
+            // Load historical route
+            map.on('load', function () {
+                loadHistoricalRoute();
+            });
+        }
+        
+        // Load historical route from trip_locations
+        function loadHistoricalRoute() {
+            if (tripLocations && tripLocations.length > 0) {
+                tripLocations.forEach(loc => {
+                    routeCoordinates.push([loc.longitude, loc.latitude]);
+                });
+                
+                // Add route line to map
+                map.addSource('route', {
+                    type: 'geojson',
+                    data: {
+                        type: 'Feature',
+                        properties: {},
+                        geometry: {
+                            type: 'LineString',
+                            coordinates: routeCoordinates
+                        }
+                    }
+                });
+                
+                map.addLayer({
+                    id: 'route',
+                    type: 'line',
+                    source: 'route',
+                    layout: {
+                        'line-join': 'round',
+                        'line-cap': 'round'
+                    },
+                    paint: {
+                        'line-color': '#3b82f6',
+                        'line-width': 4,
+                        'line-opacity': 0.7
+                    }
+                });
+                
+                // Update GPS metrics with latest location
+                if (tripLocations.length > 0) {
+                    const latest = tripLocations[tripLocations.length - 1];
+                    updateGPSMetrics(latest);
+                }
+            }
+        }
+        
+        // Update GPS metrics UI
+        function updateGPSMetrics(position) {
+            if (position.speed !== null && position.speed !== undefined) {
+                document.getElementById('gpsSpeed').textContent = Math.round(position.speed) + ' km/h';
+            }
+            if (position.altitude !== null && position.altitude !== undefined) {
+                document.getElementById('gpsAltitude').textContent = Math.round(position.altitude) + ' m';
+            }
+            if (position.bearing !== null && position.bearing !== undefined) {
+                document.getElementById('gpsBearing').textContent = Math.round(position.bearing) + '°';
+            }
+            if (position.accuracy !== null && position.accuracy !== undefined) {
+                document.getElementById('gpsAccuracy').textContent = Math.round(position.accuracy) + ' m';
+            }
+        }
+        
+        // Update map with new position (for real-time updates)
+        function updateMapPosition(latitude, longitude) {
+            if (!map || !currentMarker) return;
+            
+            const newLngLat = [longitude, latitude];
+            
+            // Update marker position
+            currentMarker.setLngLat(newLngLat);
+            
+            // Add to route
+            routeCoordinates.push(newLngLat);
+            if (map.getSource('route')) {
+                map.getSource('route').setData({
+                    type: 'Feature',
+                    properties: {},
+                    geometry: {
+                        type: 'LineString',
+                        coordinates: routeCoordinates
+                    }
+                });
+            }
+            
+            // Pan map to new location
+            map.panTo(newLngLat);
+        }
+        
+        // Auto-refresh every 10 seconds to get latest data
+        function autoRefresh() {
+            if (tripData.status === 'ongoing') {
+                setInterval(() => {
+                    console.log('Refreshing trip data...');
+                    location.reload();
+                }, 10000); // Refresh every 10 seconds for ongoing trips
+            }
+        }
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            initMap();
+            autoRefresh();
+        });
+    </script>
 </body>
 </html>

@@ -141,27 +141,97 @@
 
     <script>
         function triggerSOS() {
-            if (confirm('⚠️ Are you sure you want to trigger an SOS alert? This will notify all your trusted contacts immediately.')) {
-                // In a real implementation, this would make an API call
-                fetch('/api/sos', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-                    },
-                    body: JSON.stringify({
-                        location: 'Current Location', // In real app, get actual GPS coordinates
-                        message: 'Emergency SOS triggered from dashboard'
-                    })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    alert('🚨 SOS Alert sent! Your trusted contacts have been notified.');
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('✅ SOS Alert would be sent in production mode.');
-                });
+            if (confirm('⚠️ EMERGENCY SOS ALERT\n\nThis will immediately notify:\n• All your trusted contacts\n• Nearby volunteers\n• Emergency services\n\nProceed?')) {
+                // Get current location
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(
+                        (position) => {
+                            fetch('{{ route("sos.store") }}', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                                },
+                                body: JSON.stringify({
+                                    lat: position.coords.latitude,
+                                    lng: position.coords.longitude,
+                                    trip_id: null,
+                                    message: 'Emergency SOS triggered from dashboard'
+                                })
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.success) {
+                                    alert('🚨 SOS ALERT SENT!\n\nYour trusted contacts and nearby volunteers have been notified.\n\nStay safe. Help is on the way.');
+                                } else {
+                                    alert('Failed to send SOS: ' + (data.message || 'Unknown error'));
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Error:', error);
+                                alert('Failed to send SOS alert. Please call emergency services directly.');
+                            });
+                        },
+                        (error) => {
+                            // If location fails, still send SOS with no coordinates
+                            console.warn('Location unavailable for SOS:', error.code, error.message);
+                            
+                            if (confirm('⚠️ Location unavailable.\n\nSend SOS alert without location?\n\n(Your contacts will be notified but won\'t see your exact location)')) {
+                                fetch('{{ route("sos.store") }}', {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                                    },
+                                    body: JSON.stringify({
+                                        lat: 0,
+                                        lng: 0,
+                                        trip_id: null,
+                                        message: 'Emergency SOS triggered (location unavailable)'
+                                    })
+                                })
+                                .then(response => response.json())
+                                .then(data => {
+                                    alert('🚨 SOS ALERT SENT!\n\n(Location could not be determined)\n\nYour trusted contacts have been notified.');
+                                })
+                                .catch(error => {
+                                    console.error('Error:', error);
+                                    alert('Failed to send SOS. Please call emergency services: 999');
+                                });
+                            }
+                        },
+                        {
+                            enableHighAccuracy: true,
+                            timeout: 5000,
+                            maximumAge: 0
+                        }
+                    );
+                } else {
+                    // No geolocation support - offer to send SOS anyway
+                    if (confirm('⚠️ Your browser doesn\'t support location services.\n\nSend SOS alert without location?')) {
+                        fetch('{{ route("sos.store") }}', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                            },
+                            body: JSON.stringify({
+                                lat: 0,
+                                lng: 0,
+                                trip_id: null,
+                                message: 'Emergency SOS triggered (geolocation not supported)'
+                            })
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            alert('🚨 SOS ALERT SENT!\n\nYour trusted contacts have been notified.');
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            alert('Failed to send SOS. Please call emergency services: 999');
+                        });
+                    }
+                }
             }
         }
     </script>

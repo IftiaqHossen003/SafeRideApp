@@ -25,7 +25,12 @@ class TripViewerController extends Controller
     {
         // Find trip by share_uuid or fail with 404
         $trip = Trip::where('share_uuid', $shareUuid)
-            ->with('user:id,pseudonym,name') // Load user for pseudonym
+            ->with([
+                'user:id,pseudonym,name', // Load user for pseudonym
+                'locations' => function($query) {
+                    $query->orderBy('recorded_at', 'asc');
+                }
+            ])
             ->firstOrFail();
 
         // Prepare user display name (pseudonym or fallback to name)

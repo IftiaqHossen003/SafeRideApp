@@ -20,6 +20,21 @@ use Illuminate\Support\Facades\Auth;
 class SosController extends Controller
 {
     /**
+     * Display a listing of SOS alerts.
+     *
+     * @return \Illuminate\View\View
+     */
+    public function index()
+    {
+        $alerts = SosAlert::with(['user', 'trip'])
+            ->where('user_id', Auth::id())
+            ->orderBy('created_at', 'desc')
+            ->paginate(15);
+
+        return view('sos-alerts.index', compact('alerts'));
+    }
+
+    /**
      * Store a new SOS alert.
      *
      * Creates an emergency alert with location coordinates and optional message.

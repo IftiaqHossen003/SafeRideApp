@@ -67,10 +67,25 @@ class TripLocationUpdated implements ShouldBroadcast
      */
     public function broadcastWith(): array
     {
+        // Get the latest trip location from database
+        $latestLocation = $this->trip->locations()
+            ->latest('recorded_at')
+            ->first();
+
         return [
             'trip_id' => $this->trip->id,
             'current_lat' => $this->trip->current_lat,
             'current_lng' => $this->trip->current_lng,
+            'latest_position' => $latestLocation ? [
+                'latitude' => (float) $latestLocation->latitude,
+                'longitude' => (float) $latestLocation->longitude,
+                'accuracy' => $latestLocation->accuracy,
+                'speed' => $latestLocation->speed,
+                'altitude' => $latestLocation->altitude,
+                'bearing' => $latestLocation->bearing,
+                'recorded_at' => $latestLocation->recorded_at->toIso8601String(),
+            ] : null,
+            'status' => $this->trip->status,
             'timestamp' => now()->toIso8601String(),
         ];
     }
